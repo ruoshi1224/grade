@@ -16,20 +16,46 @@ public class Teacher {
     
     /* Teacher Variables */
     String name;
-    long teacherId;
+    String teacherID;
     ArrayList<Semester> semesters;
 
-    public Teacher(String name, long teacherId) {
+    public Teacher(String teacherID) {
+        this.teacherID = teacherID;
+    }
+    
+    public Teacher(String teacherID, String name) {
+        this.teacherID = teacherID;
         this.name = name;
-        fetch(teacherId);
     }
 
-    private boolean fetch(long teacherId) {
+    private boolean fetch(String teacherID) {
         if (db == null) {
             db = Database.getDatabase();
         }
         
-        // Fetch the data from db using jdbc
+        try {
+            /* First fetch the teacher's name */
+            String query = "select * from teacher where teacherID=" + teacherID;
+            ResultSet result = db.getQuery(query);
+            
+            if (result.next()) {
+                this.name = result.getString("teacherName");
+            }
+            
+            /* Fetch the existing semesters of the teacher */
+            query = "select * from semester where teacherID=" + teacherID;
+            result = db.getQuery(query);
+            
+            while (result.next()) {
+                Semester semester = new Semester(result.getString("semesterID"),
+                    result.getString("semesterName"));
+                semesters.add(semester);
+            }
+        } catch(SQLException e) {
+            e.printStackTrace(); // DEBUG
+            return false;
+        }
+
         return false;
     }
     
@@ -46,7 +72,7 @@ public class Teacher {
             prpst.setString(3, name);
             prpst.execute();
             
-            return new Teacher(teacherId, password, name);
+            return new Teacher(teacherId, name);
         } catch (SQLException e) {
             e.printStackTrace(); // DEBUG
             return null;
@@ -54,6 +80,11 @@ public class Teacher {
     }
 
     public ArrayList<Semester> getSemesters() {
+        if (semesters == null) {
+            semesters = new ArrayList<Semester>();
+            fetch(teacherID);
+        }
+        
         return semesters;
     }
 

@@ -36,7 +36,6 @@ public class Database {
             // Check if the database exists on the server...
             resultSet = connection.getMetaData().getCatalogs();
             while (resultSet.next()) {
-                // Get the database name, which is at position 1
                 String databaseName = resultSet.getString(1);
                 if (databaseName.equals(DATABASE_NAME)) {
                     System.out.println(DATABASE_NAME + " found, connecting...");
@@ -48,21 +47,23 @@ public class Database {
             statement.executeUpdate(sql);
             System.out.println("Database " + DATABASE_NAME + " created.");
 
-            sql = ("USE gradesystem;");
+            sql = "USE " + DATABASE_NAME + ";";
             statement.execute(sql);
             
             sql = ("create table teacher(\n"
                     + "teacherID varchar(20) NOT NULL,\n"
                     + "password varchar(20) NOT NULL,\n"
-                    + "name varchar(20) NOT NULL,\n"
+                    + "teacherName varchar(20) NOT NULL,\n"
                     + "PRIMARY KEY (teacherID)\n"
                     + ");");
+            statement.execute(sql);
+            System.out.println("Table teacher created successfully...");
 
             sql = ("create table semester(\n"
                     + "semesterID int NOT NULL,\n"
                     + "teacherID varchar(20) NOT NULL,\n"
                     + "semesterName varchar(20) NOT NULL,\n"
-                    + "PRIMARY KEY (semesterID)\n"
+                    + "PRIMARY KEY (semesterID),\n"
                     + "FOREIGN KEY (teacherID) references teacher(teacherID)\n"
                     + ");");
             statement.execute(sql);
@@ -76,7 +77,7 @@ public class Database {
                     + "FOREIGN KEY (semesterID) references semester(semesterID)\n"
                     + ");");
             statement.execute(sql);
-            System.out.println("Table courses created successfully...");
+            System.out.println("Table course created successfully...");
 
             sql = ("create table student (\n"
                     + "studentID int NOT NULL,\n"
@@ -84,7 +85,7 @@ public class Database {
                     + "degree int NOT NULL,\n"
                     + "courseID int NOT NULL,\n"
                     + "PRIMARY KEY (studentID),\n"
-                    + "FOREIGN KEY (courseID) REFERENCES courses(courseID)\n"
+                    + "FOREIGN KEY (courseID) REFERENCES course(courseID)\n"
                     + ");");
             statement.execute(sql);
             System.out.println("Table student created successfully...");
@@ -94,7 +95,7 @@ public class Database {
                     + "categoryName varchar(20) NOT NULL,\n"
                     + "courseID int NOT NULL,\n"
                     + "PRIMARY KEY (categoryID),\n"
-                    + "FOREIGN KEY (courseID) \tREFERENCES courses(courseID));");
+                    + "FOREIGN KEY (courseID) \tREFERENCES course(courseID));");
             statement.execute(sql);
             System.out.println("Table category created successfully...");
 
@@ -122,15 +123,15 @@ public class Database {
             statement.execute(sql);
             System.out.println("Table grade created successfully...");
 
-            sql = ("create table commentbyteacher (\n"
+            sql = ("create table comment (\n"
                     + "studentID int NOT NULL,\n"
                     + "assignmentID int NOT NULL,\n"
-                    + "commentbyteacher TEXT,\n"
+                    + "comment TEXT,\n"
                     + "foreign key (studentID) REFERENCES student(studentID),\n"
                     + "foreign key (assignmentID) REFERENCES assignment(assignmentID)\n"
                     + ");");
             statement.execute(sql);
-            System.out.println("Table commentbyteacher created successfully...");
+            System.out.println("Table comment created successfully...");
 
             sql = ("CREATE TABLE weights (\n"
                     + "categoryID int,\n"

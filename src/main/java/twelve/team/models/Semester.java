@@ -23,4 +23,20 @@ public class Semester {
     private void fetch() {
         
     }
+    
+    public ArrayList<Course> getCourses() {
+        return null;
+    }
+    
+    public boolean editCourse(String courseID) {
+        return false;
+    }
+
+    public boolean removeCourse(String courseID) {
+        return false;
+    }
+
+    public boolean addCourse(Course course) {
+        return false;
+    }
 }

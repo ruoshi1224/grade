@@ -1,6 +1,10 @@
 package twelve.team.models;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import twelve.team.Database;
 
 /**
  * The user representation of a teacher. Initialized after authentication and
@@ -8,17 +12,45 @@ import java.util.ArrayList;
  * screen as a reference to CRUD semesters.
  */
 public class Teacher {
+    public static Database db;
+    
+    /* Teacher Variables */
     String name;
+    long teacherId;
     ArrayList<Semester> semesters;
 
     public Teacher(String name, long teacherId) {
         this.name = name;
-        semesters = fetch(teacherId);
+        fetch(teacherId);
     }
 
-    private ArrayList<Semester> fetch(long teacherId) {
+    private boolean fetch(long teacherId) {
+        if (db == null) {
+            db = Database.getDatabase();
+        }
+        
         // Fetch the data from db using jdbc
-        return null;
+        return false;
+    }
+    
+    public static Teacher create(String teacherId, String password, String name) {
+        if (db == null) {
+            db = Database.getDatabase();
+        }
+        
+        try {
+            String query = "insert into teacher (username, password, name) values (?, ?, ?)";
+            PreparedStatement prpst = db.prepareStatement(query);
+            prpst.setString(1, teacherId);
+            prpst.setString(2, password);
+            prpst.setString(3, name);
+            prpst.execute();
+            
+            return new Teacher(teacherId, password, name);
+        } catch (SQLException e) {
+            e.printStackTrace(); // DEBUG
+            return null;
+        }
     }
 
     public ArrayList<Semester> getSemesters() {

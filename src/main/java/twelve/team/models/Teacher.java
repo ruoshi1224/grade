@@ -33,7 +33,7 @@ public class Teacher {
         return false;
     }
     
-    public static Teacher create(String teacherId, String password, String name) {
+    public static Teacher create(long teacherId, String password, String name) {
         if (db == null) {
             db = Database.getDatabase();
         }
@@ -41,12 +41,12 @@ public class Teacher {
         try {
             String query = "insert into teacher (username, password, name) values (?, ?, ?)";
             PreparedStatement prpst = db.prepareStatement(query);
-            prpst.setString(1, teacherId);
+            prpst.setString(1, Long.toString(teacherId));
             prpst.setString(2, password);
             prpst.setString(3, name);
             prpst.execute();
             
-            return new Teacher(teacherId, password, name);
+            return new Teacher(name,teacherId);
         } catch (SQLException e) {
             e.printStackTrace(); // DEBUG
             return null;
